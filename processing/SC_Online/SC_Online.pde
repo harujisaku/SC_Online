@@ -1,11 +1,13 @@
 Map m;
 Player p;
+Enemy e;
 int x=0;
 void setup(){
   // fullScreen();
   size(300,300);
   m=new Map(4,width,height);
   p=new Player();
+  e=new Enemy(4);
   m.setup_map();
   frameRate(500);
 }
@@ -14,6 +16,7 @@ void draw(){
   noCursor();
   m.kari_map();
   m.draw_map(x);
+  e.draw_enemy();
   key_check();
   p.reticle(0);
   p.draw_hed();
@@ -21,19 +24,7 @@ void draw(){
 }
 
 void key_check(){
-  if(keyPressed==true){
-    if(key==CODED){
-      if(keyCode==RIGHT){
-        x-=10;
-      }else if(keyCode==LEFT){
-        x+=10;
-      }
-    }else if(key=='a'){
-      x+=5;
-    }else if(key=='d'){
-      x-=5;
-    }
-  }
+  
 }
 
 class Map{
@@ -46,7 +37,7 @@ class Map{
   }
   void draw_map(int a){
     imageMode(CENTER);
-    image(map_buffer,x/4,-50,map_width/4,map_height/4);
+    image(map_buffer,x/map_kyori,-50,map_width/map_kyori,map_height/map_kyori);
     image(map_buffer,x,0);
   }
   void kari_map(){
@@ -66,8 +57,11 @@ class Map{
   void hit_check(){
     rectMode(CORNERS);
     // println(mouseX,mouseY);
-    rect((-50+x)/4,-100/4-50,(50+x)/4,100/4-50);
-    if((mouseX>=(-50+x)/4+150)&&(mouseY>=(-100)/4-50+150)&&(mouseX<=(50+x)/4+150)&&(mouseY<=(100/4-50)+150)){
+    // rect((-50+x)/map_kyori,-100/map_kyori-50,(50+x)/map_kyori,100/map_kyori-50);
+    if((mouseX>=100+x)&&(mouseY>=-250)&&(mouseX<=200+x)&&(mouseY<=200)){
+      println("hit player side wall");
+    }else if((mouseX>=(-50+x)/map_kyori+150)&&(mouseY>=(-100)/map_kyori-50+150)&&(mouseX<=(50+x)/map_kyori+150)&&(mouseY<=(100/map_kyori-50)+150)){
+      println("hit enemy side wall");
     }
   }
 }
@@ -106,13 +100,42 @@ class Player{
     rect(0,0,96,96);
     rectMode(CORNER);
   }
+
+
+
 }
 
 class Enemy{
-  Enemy(){
+  int pos_x,pos_y,kyori;
+  boolean squat;
+  Enemy(int _kyori){
+    kyori=_kyori;
+  }
+  // void setup_enemy(){
+
+  // }
+  void draw_enemy(){
+    rectMode(CENTER);
+    rect((pos_x+x)/kyori,-50,100/kyori,100/kyori);
+  }
+  void move_enemy(int ps_x,int ps_y){
+    pos_x=ps_x;
+    pos_y=ps_y;
+    draw_enemy();
+  }
+  void squat_enemy(){
 
   }
-  void setup_enemy(){
-    
+}
+
+class Gun{
+  Gun(){
+
+  }
+}
+
+class Bullet{
+  Bullet(){
+
   }
 }
