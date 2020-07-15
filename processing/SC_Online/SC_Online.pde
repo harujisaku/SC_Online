@@ -2,7 +2,6 @@ Map m;
 Player p;
 int x=0;
 void setup(){
-  println(displayWidth,displayHeight);
   // fullScreen();
   size(300,300);
   m=new Map(4,width,height);
@@ -45,14 +44,16 @@ class Map{
     map_height=_height;
   }
   void draw_map(int a){
+    // translate(map_width/2,map_height/2);
 
+    // rectMode(CENTER);
   }
   void kari_map(){
-    map_buffer.translate(map_width,mao_height);
+    translate(map_width/2,map_height/2);
+    rectMode(CENTER);
+    rect(0,-50,100,100);
   }
   void setup_map(){
-    translate(map_width/2,map_height);
-    rectMode(CENTER);
     map_buffer=createGraphics(map_width,map_height);
   }
 }
@@ -63,21 +64,26 @@ class Player{
   }
 
   void reticle(){
-    fill(255,0,0);
+    pushMatrix();
+    fill(255,0,0,200);
+    translate(-width/2,-height/2);
+    // println(width,height);
+    rectMode(CORNER);
     rect(mouseX-1,mouseY-5,2,4);
     rect(mouseX-1,mouseY+2,2,4);
     rect(mouseX-6,mouseY-1,4,2);
     rect(mouseX+2,mouseY-1,4,2);
+    popMatrix();
   }
   void draw_hed(){
     rectMode(CENTER);
     fill(0,0,0,0);
     stroke(0);
-    rect(width/2,height/2,100,100);
+    rect(0,0,100,100);
     stroke(255);
-    rect(width/2,height/2,98,98);
+    rect(0,0,98,98);
     stroke(0);
-    rect(width/2,height/2,96,96);
+    rect(0,0,96,96);
     rectMode(CORNER);
   }
 }
