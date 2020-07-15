@@ -112,4 +112,7 @@ class Enemy{
   Enemy(){
 
   }
+  void setup_enemy(){
+    
+  }
 }
