@@ -7,7 +7,7 @@ void setup(){
   m=new Map(4,width,height);
   p=new Player();
   m.setup_map();
-  frameRate(60);
+  frameRate(500);
 }
 void draw(){
   background(255);
@@ -15,8 +15,9 @@ void draw(){
   m.kari_map();
   m.draw_map(x);
   key_check();
-  p.reticle();
+  p.reticle(0);
   p.draw_hed();
+  m.hit_check();
 }
 
 void key_check(){
@@ -44,11 +45,8 @@ class Map{
     map_height=_height;
   }
   void draw_map(int a){
-    // translate(map_width/2,map_height/2);
-
-    // rectMode(CENTER);
     imageMode(CENTER);
-    image(map_buffer,x/2,-50,100,100);
+    image(map_buffer,x/4,-50,map_width/4,map_height/4);
     image(map_buffer,x,0);
   }
   void kari_map(){
@@ -59,11 +57,18 @@ class Map{
     map_buffer.translate(map_width/2,map_height/2);
     map_buffer.rectMode(CENTER);
     map_buffer.fill(0);
-    map_buffer.rect(0,0,100,100);
+    map_buffer.rect(0,0,100,200);
     map_buffer.endDraw();
   }
   void setup_map(){
     map_buffer=createGraphics(map_width,map_height);
+  }
+  void hit_check(){
+    rectMode(CORNERS);
+    // println(mouseX,mouseY);
+    rect((-50+x)/4,-100/4-50,(50+x)/4,100/4-50);
+    if((mouseX>=(-50+x)/4+150)&&(mouseY>=(-100)/4-50+150)&&(mouseX<=(50+x)/4+150)&&(mouseY<=(100/4-50)+150)){
+    }
   }
 }
 
@@ -72,16 +77,22 @@ class Player{
   Player(){
   }
 
-  void reticle(){
+  void reticle(int type){
     pushMatrix();
     fill(255,0,0,200);
     translate(-width/2,-height/2);
     // println(width,height);
     rectMode(CORNER);
-    rect(mouseX-1,mouseY-5,2,4);
-    rect(mouseX-1,mouseY+2,2,4);
-    rect(mouseX-6,mouseY-1,4,2);
-    rect(mouseX+2,mouseY-1,4,2);
+    if (type==0){
+      rect(mouseX-1,mouseY-5,2,4);
+      rect(mouseX-1,mouseY+2,2,4);
+      rect(mouseX-6,mouseY-1,4,2);
+      rect(mouseX+2,mouseY-1,4,2);
+    }else if(type==1){
+      fill(255);
+      stroke(0);
+      rect(mouseX,mouseY,2,2);
+    }
     popMatrix();
   }
   void draw_hed(){
