@@ -24,7 +24,19 @@ void draw(){
 }
 
 void key_check(){
-  
+  if(keyPressed==true){
+    int a=5;
+    if(key==' '){
+      a=10;
+    }
+    if(key=='a'){
+      x+=a;
+      println(a);
+    }else if(key=='d'){
+      x-=a;
+      println(a);
+    }
+  }
 }
 
 class Map{
