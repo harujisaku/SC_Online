@@ -47,11 +47,20 @@ class Map{
     // translate(map_width/2,map_height/2);
 
     // rectMode(CENTER);
+    imageMode(CENTER);
+    image(map_buffer,x/2,-50,100,100);
+    image(map_buffer,x,0);
   }
   void kari_map(){
     translate(map_width/2,map_height/2);
     rectMode(CENTER);
-    rect(0,-50,100,100);
+    map_buffer.beginDraw();
+    map_buffer.background(0,0,0,0);
+    map_buffer.translate(map_width/2,map_height/2);
+    map_buffer.rectMode(CENTER);
+    map_buffer.fill(0);
+    map_buffer.rect(0,0,100,100);
+    map_buffer.endDraw();
   }
   void setup_map(){
     map_buffer=createGraphics(map_width,map_height);
