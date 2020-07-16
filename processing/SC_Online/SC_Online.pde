@@ -1,7 +1,10 @@
 Map m;
 Player p;
 Enemy e;
-int x=0;
+int x=0,y=0;
+int bit;
+int a;
+int speed=5;
 void setup(){
   // fullScreen();
   size(300,300);
@@ -24,19 +27,46 @@ void draw(){
 }
 
 void key_check(){
-  if(keyPressed==true){
-    int a=5;
-    if(key==' '){
-      a=10;
-    }
-    if(key=='a'){
-      x+=a;
-      println(a);
-    }else if(key=='d'){
-      x-=a;
-      println(a);
-    }
+  speed=5;
+  y=0;
+  if ((bit&(1<<5))>0){
+    speed=10;
   }
+  if ((bit&(1<<4))>0){
+    y-=50;
+    speed-=3;
+    }
+  if ((bit&(1<<0))>0){
+    x-=speed;
+  }
+  if ((bit&(1<<1))>0) x+=speed;
+  if ((bit&(1<<6))>0) y+=50;
+  // if ((bit&(1<<2))>0) b+=1;
+  // if ((bit&(1<<3))>0) b-=1;
+}
+
+void keyPressed(){
+  if (keyCode == 68) bit |= (1<<0); //00000001
+  if (keyCode == 65)  bit |= (1<<1); //00000010
+  if (keyCode == 87)    bit |= (1<<2); //00000100
+  if (keyCode == 83)  bit |= (1<<3); //00001000
+  if (keyCode == SHIFT)  bit |= (1<<4); //00001000
+  if (keyCode == CONTROL)  bit |= (1<<5); //00001000
+  if (keyCode == 32)  bit |= (1<<6); //00001000
+  if (keyCode == 81)  bit |= (1<<7); //00001000
+  if (keyCode == 69)  bit |= (1<<8); //00001000
+}
+
+void keyReleased(){
+  if (keyCode == 68) bit &= ~(1<<0);
+  if (keyCode == 65)  bit &= ~(1<<1);
+  if (keyCode == 87)    bit &= ~(1<<2);
+  if (keyCode == 83)  bit &= ~(1<<3);
+  if (keyCode == SHIFT)  bit &= ~(1<<4);
+  if (keyCode == CONTROL)  bit &= ~(1<<5);
+  if (keyCode == 32)  bit &= ~(1<<6);
+  if (keyCode == 81)  bit &= ~(1<<7);
+  if (keyCode == 69)  bit &= ~(1<<8);
 }
 
 class Map{
@@ -49,8 +79,8 @@ class Map{
   }
   void draw_map(int a){
     imageMode(CENTER);
-    image(map_buffer,x/map_kyori,-50,map_width/map_kyori,map_height/map_kyori);
-    image(map_buffer,x,0);
+    image(map_buffer,x/map_kyori,-50+y/map_kyori,map_width/map_kyori,map_height/map_kyori);
+    image(map_buffer,x,y);
   }
   void kari_map(){
     translate(map_width/2,map_height/2);
@@ -67,13 +97,13 @@ class Map{
     map_buffer=createGraphics(map_width,map_height);
   }
   void hit_check(){
-    rectMode(CORNERS);
+    // rectMode(CORNERS);
     // println(mouseX,mouseY);
-    // rect((-50+x)/map_kyori,-100/map_kyori-50,(50+x)/map_kyori,100/map_kyori-50);
-    if((mouseX>=100+x)&&(mouseY>=-250)&&(mouseX<=200+x)&&(mouseY<=200)){
-      println("hit player side wall");
-    }else if((mouseX>=(-50+x)/map_kyori+150)&&(mouseY>=(-100)/map_kyori-50+150)&&(mouseX<=(50+x)/map_kyori+150)&&(mouseY<=(100/map_kyori-50)+150)){
-      println("hit enemy side wall");
+    // rect(100+x,-250,200+x,200);
+    if((mouseX>=100+x)&&(mouseY>=50+y)&&(mouseX<=200+x)&&(mouseY<=250)){
+      // println("hit player side wall",a);
+    }else if((mouseX>=(-50+x)/map_kyori+150)&&(mouseY>=(-100+y)/map_kyori-50+150)&&(mouseX<=(50+x)/map_kyori+150)&&(mouseY<=((100+y)/map_kyori-50)+150)){
+      // println("hit enemy side wall");
     }
   }
 }
@@ -112,6 +142,9 @@ class Player{
     rect(0,0,96,96);
     rectMode(CORNER);
   }
+  void jamp(){
+
+  }
 
 
 
@@ -128,7 +161,7 @@ class Enemy{
   // }
   void draw_enemy(){
     rectMode(CENTER);
-    rect((pos_x+x)/kyori,-50,100/kyori,100/kyori);
+    rect((pos_x+x)/kyori,-50+y/kyori,100/kyori,100/kyori);
   }
   void move_enemy(int ps_x,int ps_y){
     pos_x=ps_x;
