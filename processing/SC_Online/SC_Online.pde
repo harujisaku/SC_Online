@@ -5,12 +5,20 @@ int x=0,y=0;
 int bit;
 int a;
 int speed=5;
+int jamp_var;
+int y_prev,y_temp,damage;
+boolean jamp_flg,right,left,fire_flg=false;
+Gun[] guns;
+Gun g;
 void setup(){
   // fullScreen();
+  g = new Gun(50,10);
+  guns = new Gun[1];
+  guns[0] = g;
   size(300,300);
   m=new Map(4,width,height);
-  p=new Player();
-  e=new Enemy(4);
+  p=new Player(100);
+  e=new Enemy(4,100);
   m.setup_map();
   frameRate(500);
 }
@@ -19,11 +27,19 @@ void draw(){
   noCursor();
   m.kari_map();
   m.draw_map(x);
+  e.move_enemy(-(x),-(y));
   e.draw_enemy();
+  if(guns[0].fire()){
+    // println("variables");
+    e.damage(guns[0].damage);
+  }
+  // e.hit_check();
   key_check();
   p.reticle(0);
   p.draw_hed();
   m.hit_check();
+  p.jamp();
+  // println(e.hp);
 }
 
 void key_check(){
@@ -36,11 +52,30 @@ void key_check(){
     y-=50;
     speed-=3;
     }
-  if ((bit&(1<<0))>0){
+  if (((bit&(1<<0))>0)&&(jamp_flg==false)){
     x-=speed;
   }
-  if ((bit&(1<<1))>0) x+=speed;
-  if ((bit&(1<<6))>0) y+=50;
+  if (((bit&(1<<1))>0)&&(jamp_flg==false)) x+=speed;
+  if ((bit&(1<<6))>0){
+    if(jamp_flg==false){
+      jamp_flg=true;
+      if ((bit&(1<<0))>0){
+        right=true;
+        left=false;
+      }
+      if (((bit&(1<<1))>0)){
+        left=true;
+        right=false;
+      }
+    }
+  }else{
+    if((jamp_var>25)&&(jamp_flg==true)){
+      jamp_flg=false;
+      jamp_var=0;
+    }
+    right=false;
+    left=false;
+  }
   // if ((bit&(1<<2))>0) b+=1;
   // if ((bit&(1<<3))>0) b-=1;
 }
@@ -67,6 +102,10 @@ void keyReleased(){
   if (keyCode == 32)  bit &= ~(1<<6);
   if (keyCode == 81)  bit &= ~(1<<7);
   if (keyCode == 69)  bit &= ~(1<<8);
+}
+
+void mousePressed(){
+  fire_flg=e.hit_check();
 }
 
 class Map{
@@ -110,7 +149,9 @@ class Map{
 
 
 class Player{
-  Player(){
+  int hp;
+  Player(int _hp){
+    hp=_hp;
   }
 
   void reticle(int type){
@@ -133,7 +174,8 @@ class Player{
   }
   void draw_hed(){
     rectMode(CENTER);
-    fill(0,0,0,0);
+    // fill(0,0,0,0);
+    fill(0,0,0);
     stroke(0);
     rect(0,0,100,100);
     stroke(255);
@@ -143,25 +185,46 @@ class Player{
     rectMode(CORNER);
   }
   void jamp(){
-
+    if(jamp_flg==true){
+      // if(y<50){
+      //
+      // }
+      y+=100;
+      if(right){
+        x-=15;
+      }else if(left){
+        x+=15;
+      }
+      jamp_var++;
+      if(jamp_var>20){
+        y-=50;
+      }
+    }
   }
-
 
 
 }
 
 class Enemy{
-  int pos_x,pos_y,kyori;
-  boolean squat;
-  Enemy(int _kyori){
+  int pos_x,pos_y,kyori,hp;
+  boolean squat,alive;
+  Enemy(int _kyori,int _hp){
     kyori=_kyori;
+    hp=_hp;
+    squat=false;
+    alive=false;
   }
   // void setup_enemy(){
 
   // }
   void draw_enemy(){
-    rectMode(CENTER);
-    rect((pos_x+x)/kyori,-50+y/kyori,100/kyori,100/kyori);
+    if(hp>0){
+      alive=true;
+      rectMode(CENTER);
+      rect((pos_x)/kyori,-50+y/kyori,100/kyori,100/kyori);
+    }else{
+      alive=false;
+    }
   }
   void move_enemy(int ps_x,int ps_y){
     pos_x=ps_x;
@@ -171,11 +234,49 @@ class Enemy{
   void squat_enemy(){
 
   }
+
+  boolean hit_check(){
+    // rectMode(CORNERS);
+    // rect(pos_x/kyori-11.5,(-50+y/kyori)-11.5,pos_x/kyori+100/kyori-11.5,(-50+y/kyori)+100/kyori-11.5);
+    if((mouseX>=pos_x/kyori+140)&&(mouseY>=(-50+y/kyori)+140)&&(mouseX<=pos_x/kyori+140+100/kyori)&&(mouseY<=(-50+y/kyori)+140+100/kyori)){
+      return true;
+    }else{
+      return false;
+    }
+  }
+  int damage(int _damage){
+    hp=hp-_damage;
+    if(hp>=0){
+      alive=true;
+    }
+    println(hp);
+    return hp;
+  }
 }
 
 class Gun{
-  Gun(){
-
+  int damage,reroad_time,time_count=0;
+  Gun(int _damage,int _reroad_time){
+    damage=_damage;
+    reroad_time=_reroad_time;
+  }
+  boolean fire(){
+    if(fire_flg){
+      if(time_count==0){
+        time_count++;
+        return true;
+      }
+      time_count++;
+      println(time_count,reroad_time);
+      if(time_count>reroad_time){
+        println("variables2");
+        fire_flg=false;
+        time_count=0;
+      }
+      return false;
+    }else{
+      return false;
+    }
   }
 }
 
